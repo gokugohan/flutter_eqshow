@@ -39,6 +39,11 @@ dependencies:
   flutter_map: ^6.1.0
   timeago: ^3.2.2
   dotted_border: ^2.1.0
+  internet_connection_checker: ^1.0.0+1
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
+  flutter_html: ^3.0.0-beta.2
+  url_launcher: ^6.2.2
 
 
 dev_dependencies:
@@ -68,7 +73,12 @@ flutter:
   assets:
    - assets/images/logo.png
    - assets/images/location.gif
-   - assets/images/epicenter.png
+   - assets/images/marker_icon.png
+   - assets/images/magnitude.png
+   - assets/images/magnitude65.png
+   - assets/images/magnitude60_64.png
+   - assets/images/magnitude_50_59.png
+   - assets/images/magnitude_0_49.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

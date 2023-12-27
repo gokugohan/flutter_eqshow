@@ -1,11 +1,10 @@
-import 'package:eqshow/model/drawer_item.dart';
 import 'package:eqshow/model/eq_event.dart';
 import 'package:eqshow/screen/eq_event_details_screen.dart';
 import 'package:eqshow/service/eq_service.dart';
 import 'package:flutter/material.dart';
 
 class FragmentDataInRadius extends StatefulWidget {
-  FragmentDataInRadius({Key? key}) : super(key: key);
+  const FragmentDataInRadius({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();

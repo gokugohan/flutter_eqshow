@@ -3,7 +3,6 @@ import 'dart:convert';
 List<EqEvent> eqEventFromJson(String str){
   return List<EqEvent>.from(json.decode(str).map((x)=>
       EqEvent.fromJson(x )));
-
 }
 
 

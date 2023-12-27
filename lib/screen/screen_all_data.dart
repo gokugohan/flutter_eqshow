@@ -1,24 +1,20 @@
-import 'package:eqshow/model/drawer_item.dart';
 import 'package:eqshow/model/eq_event.dart';
 import 'package:eqshow/screen/eq_event_details_screen.dart';
 import 'package:eqshow/service/eq_service.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class FragmentHome extends StatefulWidget {
-  FragmentHome({Key? key}) : super(key: key);
+class ScreenAllData extends StatefulWidget {
+  const ScreenAllData({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<FragmentHome> {
+class _HomeScreenState extends State<ScreenAllData> {
   final EqService _service = EqService();
   List<EqEvent>? earthquakeList;
   bool isLoading = false;
-
-  double _value = 10;
-  String _radius = '';
 
   @override
   void initState() {
@@ -29,7 +25,7 @@ class _HomeScreenState extends State<FragmentHome> {
   }
 
   Future<List<EqEvent>?> fetchAllData() async {
-    earthquakeList ??= await _service.fetchEventListApi(50);
+    earthquakeList ??= await _service.fetchAllEventListApi();
     return earthquakeList;
   }
 
@@ -48,7 +44,7 @@ class _HomeScreenState extends State<FragmentHome> {
 
   Widget renderBody(BuildContext context) {
     return Scaffold(
-      body: renderList(),
+      body: SizedBox(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height, child: renderList()),
     );
   }
 
@@ -99,8 +95,6 @@ class _HomeScreenState extends State<FragmentHome> {
                           "Distance from HQ to source: ${item.distanceToCenterPoint} km\n"
                           "Date(UTC): ${eventDateTime.day}-${eventDateTime.month}-${eventDateTime.year} ${eventDateTime.hour}:${eventDateTime.minute}:${eventDateTime.second} (${timeago.format(eventDateTime)})",
                         ),
-                        // Text(
-                        //     "Magnitude: ${item.magnitude}\nDepth : ${item.depth} km\nDistance from IGTL Hq: ${item.distanceToCenterPoint} km\nDate(UTC): ${item.eventDatetime}"),
                         const SizedBox(
                           height: 10,
                         ),

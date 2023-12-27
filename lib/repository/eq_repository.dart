@@ -31,7 +31,7 @@ class EqRepository {
   }
 
   Future<List<EqEvent>?> fetchEventListApi(int limit) async {
-    String url = "http://geohazard.igtl.tl:83/api/events/radius/950/limit/${limit}";
+    String url = "http://geohazard.igtl.tl:83/api/events/radius/950/limit/$limit";
 
     var client = http.Client();
 
@@ -56,7 +56,7 @@ class EqRepository {
 
 
   Future<List<EqEvent>?> fetchEventListInRadiusApi(double radius) async {
-    String url = "http://geohazard.igtl.tl:83/api/events/radius/${radius}/limit/10";
+    String url = "http://geohazard.igtl.tl:83/api/events/radius/$radius/limit/10";
 
     var client = http.Client();
 
