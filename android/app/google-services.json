@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1094295853010",
+    "project_id": "earthquake-show",
+    "storage_bucket": "earthquake-show.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094295853010:android:21cd86c9723dec3d445a0b",
+        "android_client_info": {
+          "package_name": "com.example.eqshow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzcojytwqhDPWZjaMUxu47vqsgpgX_ALQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

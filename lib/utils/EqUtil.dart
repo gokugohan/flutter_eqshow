@@ -16,7 +16,7 @@ double calculateDistance(latitude1, longitude1, latitude2, longitude2) {
 }
 
 //https://flutteragency.com/total-distance-from-latlng-list-in-flutter/
-String distancessss(latitude1, longitude1, latitude2, longitude2, String unit) {
+String calculateDistanceBetween2Coordenate(latitude1, longitude1, latitude2, longitude2, String unit) {
   var lat1 = double.parse(latitude1);
   var lon1 = double.parse(longitude1);
   var lat2 = double.parse(latitude2);
@@ -32,7 +32,7 @@ String distancessss(latitude1, longitude1, latitude2, longitude2, String unit) {
   } else if (unit == 'N') {
     dist = dist * 0.8684;
   }
-  return dist.toStringAsFixed(2);
+  return dist.toStringAsFixed(1);
 }
 
 double deg2rad(double deg) {
@@ -62,4 +62,24 @@ Widget getMagnitudeIcon(double magnitude) {
   }
 
   return Image.asset(magImages,width: 50,);
+}
+
+Color getMagnitudeColor(double magnitude){
+  Color colorMagnitude = const Color(0xFF674AEF);
+  switch(magnitude){
+    case >=6.5:
+      colorMagnitude = const Color(0xFFFF0000);
+      break;
+    case  >=6.0 && <6.5:
+      colorMagnitude = const Color(0xFFFF7D11);
+      break;
+    case >=5.0 && <6.0:
+      colorMagnitude = const Color(0xFF0055BB);
+      break;
+    case <5.0:
+      colorMagnitude = const Color(0xFF0BA14B);
+      break;
+  }
+
+  return colorMagnitude;
 }

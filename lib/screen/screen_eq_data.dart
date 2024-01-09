@@ -3,7 +3,11 @@ import 'package:eqshow/screen/eq_event_details_screen.dart';
 import 'package:eqshow/service/eq_service.dart';
 import 'package:eqshow/utils/EqUtil.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:intl/intl.dart';
+import 'package:pulsator/pulsator.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:latlong2/latlong.dart' as latlng;
 
 class ScreenEqData extends StatefulWidget {
   const ScreenEqData({Key? key}) : super(key: key);
@@ -29,9 +33,19 @@ class _HomeScreenState extends State<ScreenEqData> {
   }
 
   Future<List<EqEvent>?> fetchAllData() async {
-    earthquakeList ??= await _service.fetchEventListApi(50);
+
+    if (earthquakeList == null) {
+      earthquakeList ??= await _service.fetchEventListApi(50);
+    } else {
+      if (earthquakeList!.isEmpty) {
+        earthquakeList ??= await _service.fetchEventListApi(50);
+      }
+    }
+
     return earthquakeList;
   }
+
+  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +55,33 @@ class _HomeScreenState extends State<ScreenEqData> {
         elevation: 0,
         backgroundColor: const Color(0xFF674AEF),
       ),
-      body: renderBody(context),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        backgroundColor: Color(0xFF674AEF),
+        indicatorColor: Colors.white,
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Badge(child: Icon(Icons.map)),
+            label: 'Map',
+          ),
+        ],
+      ),
+      body: <Widget>[
+        /// Home page
+        renderTabList(context),
+
+        renderTabMap(context)
+      ][currentPageIndex],
     );
   }
 
@@ -51,7 +91,72 @@ class _HomeScreenState extends State<ScreenEqData> {
     super.dispose();
   }
 
-  Widget renderBody(BuildContext context) {
+  final mapController = MapController();
+
+  Widget renderTabMap(BuildContext context) {
+    return FlutterMap(
+      mapController: mapController,
+      options: MapOptions(
+          initialCenter: latlng.LatLng(-8.560515, 125.541642), initialZoom: 5, interactionOptions: const InteractionOptions(enableScrollWheel: true)),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.chebre.igtl',
+        ),
+        // const SimpleAttributionWidget(source: Text("IGTL-IP")),
+
+        Stack(
+          children: [
+            Align(
+              alignment: AlignmentDirectional.topStart,
+              child: Image.asset(
+                "assets/images/map_legend.png",
+                width: 150,
+              ),
+            ),
+            Align(
+              alignment: AlignmentDirectional.bottomEnd,
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 75,
+              ),
+            )
+          ],
+        ),
+        MarkerLayer(
+          markers: getMarkers(),
+        ),
+      ],
+    );
+  }
+
+  List<Marker> getMarkers() {
+    List<Marker> markers = <Marker>[];
+    if (earthquakeList != null && earthquakeList!.isNotEmpty) {
+      for (int i = 0; i < earthquakeList!.length; i++) {
+        EqEvent item = earthquakeList![i];
+        markers.add(Marker(
+            point: latlng.LatLng(double.parse(item.latitude.toString()), double.parse(item.longitude.toString())),
+            width: 50,
+            height: 50,
+            child: Pulsator(
+              style: PulseStyle(color: getMagnitudeColor(double.parse(item.magnitude.toString()))),
+              count: 3,
+              duration: Duration(seconds: 10),
+              repeat: 0,
+              startFromScratch: false,
+              autoStart: true,
+              fit: PulseFit.contain,
+              child: Text(item.magnitude.toString()),
+            )
+            // getMagnitudeIcon(double.parse(item.magnitude.toString())),
+            ));
+      }
+    }
+    return markers;
+  }
+
+  Widget renderTabList(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     var topHeaderSize = screenSize.height - (screenSize.height * .80);
     var bodySize = screenSize.height - (screenSize.height * .20);
@@ -156,13 +261,30 @@ class _HomeScreenState extends State<ScreenEqData> {
             itemCount: snapshot.data!.length,
             itemBuilder: (BuildContext context, int index) {
               EqEvent item = snapshot.data![index];
-              DateTime eventDateTime = DateTime.parse(item.eventDatetime.toString());
+              DateTime eventDateTime = DateTime.parse(item.eventDatetime.toString()).add(Duration(hours: 9));
+              var eventDate = DateFormat("d/MMM/yyyy").format(eventDateTime);
+              var eventTime = DateFormat("HH:mm").format(eventDateTime);
               return Card(
+                margin: EdgeInsets.zero,
                 child: ListTile(
-                  leading: getMagnitudeIcon(double.parse(item.magnitude.toString())),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: getMagnitudeColor(double.parse(item.magnitude.toString())),
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                      boxShadow: null,
+                      border: null,
+                    ),
+                    child: Text(
+                      "M\n${item.magnitude.toString()}",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+                  //getMagnitudeIcon(double.parse(item.magnitude.toString())),
                   title: Text(
                     item.region.toString(),
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: getMagnitudeColor(double.parse(item.magnitude.toString()))),
                   ),
                   trailing: const Icon(
                     Icons.arrow_forward,
@@ -174,10 +296,10 @@ class _HomeScreenState extends State<ScreenEqData> {
                     child: Column(
                       children: [
                         Text(
-                          "Magnitudes: ${item.magnitude}\n"
+                          "Magnitudes: ${item.magnitude} sr\n"
                           "Depth: ${item.depth} km\n"
                           "Distance from HQ to source: ${item.distanceToCenterPoint} km\n"
-                          "Date(UTC): ${eventDateTime.day}-${eventDateTime.month}-${eventDateTime.year} ${eventDateTime.hour}:${eventDateTime.minute}:${eventDateTime.second} (${timeago.format(eventDateTime)})",
+                          "Date: $eventDate $eventTime (${timeago.format(eventDateTime)})",
                         ),
                         // Text(
                         //     "Magnitude: ${item.magnitude}\nDepth : ${item.depth} km\nDistance from IGTL Hq: ${item.distanceToCenterPoint} km\nDate(UTC): ${item.eventDatetime}"),
@@ -207,5 +329,4 @@ class _HomeScreenState extends State<ScreenEqData> {
     ));
     // }
   }
-
 }

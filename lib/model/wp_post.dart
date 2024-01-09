@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 List<WpPost> wpPostFromJson(String str){
-  print(str);
   return List<WpPost>.from(json.decode(str).map((x)=>WpPost.fromJson(x)));
 }
 
